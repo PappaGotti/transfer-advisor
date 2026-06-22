@@ -118,11 +118,19 @@ document.getElementById("hmetro").src = "data:image/png;base64,iVBORw0KGgoAAAANS
 
 const sb = supabase.createClient("https://nmwlxfwqeduhpygbsnip.supabase.co","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5td2x4ZndxZWR1aHB5Z2JzbmlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3ODg4MjIsImV4cCI6MjA5NzM2NDgyMn0.xidH5wySoptVL4AOWE6lkrBPVDpPY7t2mE3A1CZdv5k");
 
+// EMAIL MAP — matches Supabase exactly
 const EMAIL_MAP = {
-  "rj@ct-wireless.com":"RJ","moe@ct-wireless.com":"MOE","leydil@ct-wireless.com":"LEYDI LAURA",
-  "adil@ct-wireless.com":"ADIL","jessica@ct-wireless.com":"JESSICA","susanag@ct-wireless.com":"SUSANA G",
-  "husam@ct-wireless.com":"HUSAM","augusto@ct-wireless.com":"AUGUSTO","lissandra@ct-wireless.com":"LISSANDRA",
-  "daily@ct-wireless.com":"DAILY","anele@ct-wireless.com":"ANELE"
+  "rj@ct-wireless.com":        "RJ",
+  "moe@ct-wireless.com":       "MOE",
+  "leydi@ct-wireless.com":     "LEYDI LAURA",
+  "adil@ct-wireless.com":      "ADIL",
+  "jessica@ct-wireless.com":   "JESSICA",
+  "sgamez@ct-wireless.com":    "SUSANA G",
+  "hussam@ct-wireless.com":    "HUSAM",
+  "augusto@ct-wireless.com":   "AUGUSTO",
+  "lissandra@ct-wireless.com": "LISSANDRA",
+  "daily@ct-wireless.com":     "DAILY",
+  "anele@ct-wireless.com":     "ANELE"
 };
 
 const STORES = {
@@ -198,22 +206,15 @@ async function signOut() {
 function loadApp(session) {
   var email = session.user.email;
   var name = EMAIL_MAP[email];
-
-  // DEBUG: show email on screen so we can see what Supabase returns
   if (!name) {
     document.getElementById("store-list").innerHTML =
-      '<div style="padding:20px;background:#fff3cd;border-radius:12px;margin:10px 0;">'
-      +'<p style="font-weight:700;color:#856404;margin-bottom:8px;">Debug: Email not matched</p>'
-      +'<p style="color:#856404;font-size:13px;">Supabase returned: <strong>'+email+'</strong></p>'
-      +'<p style="color:#856404;font-size:12px;margin-top:6px;">This email is not in the user list. Please screenshot this and share it.</p>'
-      +'</div>';
+      '<div style="padding:20px;background:#fff3cd;border-radius:12px;">'
+      +'<p style="font-weight:700;color:#856404;">Email not matched: '+email+'</p></div>';
     return;
   }
-
   var h = new Date().getHours();
   var tod = h<12?"Good morning":h<17?"Good afternoon":"Good evening";
   document.getElementById("greet").textContent = tod+", "+name.split(" ")[0]+"!";
-  document.getElementById("greet-sub").textContent = "Here's your district at a glance";
   var stores = STORES[name] || STORES["ADIL"];
   var nearestId = stores[0].id;
   document.getElementById("loc-text").innerHTML = "You are near <strong>"+stores[0].name+"</strong>";
