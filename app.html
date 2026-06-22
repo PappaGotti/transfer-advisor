@@ -195,27 +195,21 @@ async function signOut() {
   window.location.href = "login.html";
 }
 
-async function init() {
-  try {
-    // Listen for auth state — this fires when Supabase restores session from storage
-    sb.auth.onAuthStateChange(function(event, session) {
-      if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
-        if (session) {
-          loadApp(session);
-        } else {
-          // No session — redirect to login
-          window.location.href = "login.html";
-        }
-      }
-    });
-  } catch(e) {
-    document.getElementById("store-list").innerHTML = '<p style="padding:20px;color:red;">Error: '+e.message+'</p>';
-  }
-}
-
 function loadApp(session) {
   var email = session.user.email;
-  var name = EMAIL_MAP[email] || "ADIL";
+  var name = EMAIL_MAP[email];
+
+  // DEBUG: show email on screen so we can see what Supabase returns
+  if (!name) {
+    document.getElementById("store-list").innerHTML =
+      '<div style="padding:20px;background:#fff3cd;border-radius:12px;margin:10px 0;">'
+      +'<p style="font-weight:700;color:#856404;margin-bottom:8px;">Debug: Email not matched</p>'
+      +'<p style="color:#856404;font-size:13px;">Supabase returned: <strong>'+email+'</strong></p>'
+      +'<p style="color:#856404;font-size:12px;margin-top:6px;">This email is not in the user list. Please screenshot this and share it.</p>'
+      +'</div>';
+    return;
+  }
+
   var h = new Date().getHours();
   var tod = h<12?"Good morning":h<17?"Good afternoon":"Good evening";
   document.getElementById("greet").textContent = tod+", "+name.split(" ")[0]+"!";
@@ -226,7 +220,15 @@ function loadApp(session) {
   renderStores(stores, nearestId);
 }
 
-init();
+sb.auth.onAuthStateChange(function(event, session) {
+  if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
+    if (session) {
+      loadApp(session);
+    } else {
+      window.location.href = "login.html";
+    }
+  }
+});
 
 </script>
 </body>
