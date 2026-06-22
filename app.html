@@ -17,7 +17,6 @@
   .loc-bar { background:var(--purple-dark); padding:10px 16px; display:flex; align-items:center; gap:8px; border-bottom:1px solid rgba(255,255,255,0.08); }
   .loc-bar p { font-size:13px; color:rgba(255,255,255,0.75); }
   .loc-bar strong { color:white; font-weight:700; }
-  .loc-bar .dim { color:rgba(255,255,255,0.45); font-style:italic; }
   .app-body { padding:18px 16px 0; }
   .greeting { margin-bottom:20px; }
   .greeting h1 { font-size:21px; font-weight:700; color:var(--text-dark); margin-bottom:3px; }
@@ -32,13 +31,10 @@
   .store-list { display:flex; flex-direction:column; gap:10px; margin-bottom:20px; }
   .store-card { background:white; border-radius:14px; overflow:hidden; box-shadow:var(--shadow); cursor:pointer; border:1.5px solid transparent; transition:transform 0.12s; }
   .store-card:active { transform:scale(0.985); }
-  .store-card.nearby { border-color:var(--magenta); box-shadow:0 2px 16px rgba(226,0,116,0.15); }
   .store-card-top { padding:14px 16px 10px; display:flex; align-items:flex-start; justify-content:space-between; gap:8px; }
   .store-name { font-size:15px; font-weight:700; color:var(--text-dark); margin-bottom:2px; }
   .store-id { font-size:11px; color:var(--text-light); }
-  .nearby-pill { display:none; background:var(--magenta); color:white; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:3px 9px; border-radius:20px; white-space:nowrap; flex-shrink:0; }
-  .store-card.nearby .nearby-pill { display:inline-block; }
-  .store-stats { padding:0 16px 12px; display:grid; grid-template-columns:repeat(4,1fr); gap:6px; }
+  .store-stats { padding:0 16px 12px; display:grid; grid-template-columns:repeat(3,1fr); gap:6px; }
   .sstat { text-align:center; }
   .sstat .sv { font-size:17px; font-weight:800; color:var(--text-dark); line-height:1; }
   .sstat .sv.hot { color:var(--magenta); }
@@ -65,6 +61,7 @@
   .cov-badge { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.4px; padding:3px 9px; border-radius:20px; white-space:nowrap; flex-shrink:0; }
   .cov-badge.full { background:var(--green-bg); color:var(--green); }
   .cov-badge.partial { background:var(--amber-bg); color:var(--amber); }
+  .cov-badge.po { background:rgba(190,18,60,0.08); color:#be123c; }
   .t-arrow { display:flex; align-items:center; gap:8px; margin-bottom:10px; }
   .t-store { background:var(--off-white); border:1px solid var(--border); border-radius:8px; padding:6px 10px; font-size:12px; font-weight:600; color:var(--text-dark); flex:1; text-align:center; }
   .t-arrowicon { color:var(--magenta); font-size:18px; flex-shrink:0; }
@@ -76,6 +73,7 @@
   .bnav-item { flex:1; display:flex; flex-direction:column; align-items:center; padding:10px 4px 6px; gap:3px; cursor:pointer; color:var(--text-light); font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:0.4px; }
   .bnav-item.active { color:var(--purple); }
   .bnav-icon { font-size:22px; line-height:1; }
+  @keyframes spin { to { transform:rotate(360deg); } }
 </style>
 </head>
 <body>
@@ -87,17 +85,17 @@
   </div>
   <button class="sign-out-btn" onclick="signOut()">Sign Out</button>
 </header>
-<div class="loc-bar"><span>&#128205;</span><p id="loc-text"><span class="dim">Detecting location...</span></p></div>
+<div class="loc-bar"><span>&#128205;</span><p id="loc-text">Loading...</p></div>
 <div class="app-body">
   <div class="greeting"><h1 id="greet">Good morning</h1><p id="greet-sub">Here's your district at a glance</p></div>
   <div class="section-label">District Summary</div>
   <div class="stat-row">
-    <div class="stat-card"><div class="stat-value" id="s-stores">0</div><div class="stat-label">Stores</div></div>
-    <div class="stat-card"><div class="stat-value amber" id="s-trans">0</div><div class="stat-label">Transfers Pending</div></div>
-    <div class="stat-card"><div class="stat-value green" id="s-val">$0</div><div class="stat-label">Transfer Value</div></div>
+    <div class="stat-card"><div class="stat-value" id="s-stores">—</div><div class="stat-label">Stores</div></div>
+    <div class="stat-card"><div class="stat-value amber" id="s-trans">—</div><div class="stat-label">Transfers Pending</div></div>
+    <div class="stat-card"><div class="stat-value green" id="s-val">—</div><div class="stat-label">Transfer Value</div></div>
   </div>
   <div class="section-label">My Stores</div>
-  <div class="store-list" id="store-list"><p style="padding:20px;color:var(--text-light);text-align:center;">Loading your stores...</p></div>
+  <div class="store-list" id="store-list"></div>
 </div>
 <div class="overlay" id="overlay" onclick="closePanel()"></div>
 <div class="panel" id="panel">
@@ -118,7 +116,10 @@ document.getElementById("hmetro").src = "data:image/png;base64,iVBORw0KGgoAAAANS
 
 const sb = supabase.createClient("https://nmwlxfwqeduhpygbsnip.supabase.co","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5td2x4ZndxZWR1aHB5Z2JzbmlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3ODg4MjIsImV4cCI6MjA5NzM2NDgyMn0.xidH5wySoptVL4AOWE6lkrBPVDpPY7t2mE3A1CZdv5k");
 
-// EMAIL MAP — matches Supabase exactly
+const SHEET_ID = "1ScasNvCPGeo-dIka8f9UUZ4AFOP48A3G3qTyXbTC_Ow";
+const SHEET_TAB = "Transfer Data";
+const MANAGERS_TAB = "Managers";
+
 const EMAIL_MAP = {
   "rj@ct-wireless.com":        "RJ",
   "moe@ct-wireless.com":       "MOE",
@@ -133,62 +134,164 @@ const EMAIL_MAP = {
   "anele@ct-wireless.com":     "ANELE"
 };
 
-const STORES = {
-  "RJ":          [{id:"S101",name:"Fowler Ave",onHand:142,transfers:3,value:187,po:0},{id:"S102",name:"Fletcher Ave",onHand:89,transfers:1,value:62,po:0},{id:"S201",name:"Dale Mabry",onHand:178,transfers:4,value:312,po:0},{id:"S301",name:"Waters Ave",onHand:112,transfers:1,value:78,po:0},{id:"S401",name:"US-19 N",onHand:189,transfers:3,value:245,po:0},{id:"S501",name:"Tamiami Trail",onHand:98,transfers:2,value:143,po:0}],
-  "MOE":         [{id:"S601",name:"NW 7th Ave",onHand:211,transfers:4,value:334,po:0},{id:"S701",name:"Biscayne Blvd",onHand:133,transfers:3,value:278,po:0},{id:"S801",name:"SW 137th Ave",onHand:167,transfers:1,value:112,po:0},{id:"S802",name:"Kendall Dr",onHand:94,transfers:4,value:367,po:0}],
-  "LEYDI LAURA": [{id:"S601",name:"NW 7th Ave",onHand:211,transfers:4,value:334,po:0},{id:"S701",name:"Biscayne Blvd",onHand:133,transfers:3,value:278,po:0},{id:"S801",name:"SW 137th Ave",onHand:167,transfers:1,value:112,po:0}],
-  "ADIL":        [{id:"S101",name:"Fowler Ave",onHand:142,transfers:3,value:187,po:0},{id:"S102",name:"Fletcher Ave",onHand:89,transfers:1,value:62,po:0},{id:"S103",name:"Nebraska Ave",onHand:203,transfers:0,value:0,po:1},{id:"S104",name:"Busch Blvd",onHand:56,transfers:2,value:134,po:0}],
-  "JESSICA":     [{id:"S201",name:"Dale Mabry",onHand:178,transfers:4,value:312,po:0},{id:"S202",name:"Hillsborough Ave",onHand:94,transfers:0,value:0,po:0},{id:"S203",name:"Brandon Blvd",onHand:67,transfers:2,value:95,po:1}],
-  "SUSANA G":    [{id:"S301",name:"Waters Ave",onHand:112,transfers:1,value:78,po:0},{id:"S302",name:"Gunn Hwy",onHand:245,transfers:5,value:421,po:0},{id:"S303",name:"Ehrlich Rd",onHand:33,transfers:0,value:0,po:2}],
-  "HUSAM":       [{id:"S401",name:"US-19 N",onHand:189,transfers:3,value:245,po:0},{id:"S402",name:"Ulmerton Rd",onHand:77,transfers:1,value:88,po:0},{id:"S403",name:"Gulf to Bay",onHand:134,transfers:0,value:0,po:0},{id:"S404",name:"Park Blvd",onHand:52,transfers:2,value:167,po:1}],
-  "AUGUSTO":     [{id:"S501",name:"Tamiami Trail",onHand:98,transfers:2,value:143,po:0},{id:"S502",name:"Kings Hwy",onHand:156,transfers:1,value:67,po:0},{id:"S503",name:"Murdock Ave",onHand:44,transfers:3,value:198,po:1}],
-  "LISSANDRA":   [{id:"S601",name:"NW 7th Ave",onHand:211,transfers:4,value:334,po:0},{id:"S602",name:"NW 27th Ave",onHand:88,transfers:0,value:0,po:0},{id:"S603",name:"Coral Way",onHand:142,transfers:2,value:156,po:0},{id:"S604",name:"SW 8th St",onHand:67,transfers:1,value:89,po:1}],
-  "DAILY":       [{id:"S701",name:"Biscayne Blvd",onHand:133,transfers:3,value:278,po:0},{id:"S702",name:"NE 2nd Ave",onHand:79,transfers:0,value:0,po:0},{id:"S703",name:"Flagler St",onHand:198,transfers:2,value:189,po:0}],
-  "ANELE":       [{id:"S801",name:"SW 137th Ave",onHand:167,transfers:1,value:112,po:0},{id:"S802",name:"Kendall Dr",onHand:94,transfers:4,value:367,po:0},{id:"S803",name:"Bird Rd",onHand:55,transfers:0,value:0,po:2}]
+// Which markets each user can see
+const USER_MARKETS = {
+  "RJ":          ["TAMPA BAY", "PORT CHARLOTTE"],
+  "MOE":         ["MIAMI"],
+  "LEYDI LAURA": ["MIAMI"],
+  "ADIL":        ["TAMPA BAY"],
+  "JESSICA":     ["TAMPA BAY"],
+  "SUSANA G":    ["TAMPA BAY"],
+  "HUSAM":       ["TAMPA BAY"],
+  "AUGUSTO":     ["PORT CHARLOTTE"],
+  "LISSANDRA":   ["MIAMI"],
+  "DAILY":       ["MIAMI"],
+  "ANELE":       ["MIAMI"]
 };
 
-const DEMO_T = [
-  {name:"Samsung Galaxy A54 Case",cat:"CASES",fromName:"This Store",toName:"Busch Blvd",qty:4,value:39.96,coverage:"full"},
-  {name:"USB-C Fast Charger 25W",cat:"CHARGERS",fromName:"Nebraska Ave",toName:"This Store",qty:2,value:49.98,coverage:"partial",stillNeeded:1},
-  {name:"Screen Protector Pro",cat:"SCREEN PRO",fromName:"This Store",toName:"Dale Mabry",qty:6,value:71.94,coverage:"full"}
-];
+async function fetchSheetData(tabName) {
+  var url = "https://docs.google.com/spreadsheets/d/" + SHEET_ID
+    + "/gviz/tq?tqx=out:json&sheet=" + encodeURIComponent(tabName);
+  var resp = await fetch(url);
+  var text = await resp.text();
+  // Strip Google's wrapper: google.visualization.Query.setResponse({...})
+  var json = JSON.parse(text.substring(text.indexOf("{"), text.lastIndexOf("}") + 1));
+  var cols = json.table.cols.map(function(c){ return c.label; });
+  var rows = json.table.rows || [];
+  return rows.map(function(r){
+    var obj = {};
+    r.c.forEach(function(cell, i){
+      obj[cols[i]] = cell ? (cell.v !== null && cell.v !== undefined ? cell.v : "") : "";
+    });
+    return obj;
+  });
+}
 
-function renderStores(stores, nearestId) {
-  var totalT=0, totalV=0;
-  document.getElementById("store-list").innerHTML = stores.map(function(s) {
-    totalT += s.transfers; totalV += s.value;
-    var near = s.id === nearestId;
+function getStoreStats(transfers, userName) {
+  // For DMs: group by their own stores (TO or FROM)
+  // For Directors/AM: group by all stores in their markets
+  var markets = USER_MARKETS[userName] || [];
+  var isDM = !["RJ","MOE","LEYDI LAURA"].includes(userName);
+
+  var storeMap = {};
+
+  transfers.forEach(function(t) {
+    var dm = String(t["DM"] || "").trim().toUpperCase();
+    var market = String(t["Market"] || "").trim().toUpperCase();
+
+    // Filter by market access
+    if (!markets.some(function(m){ return market.indexOf(m) > -1; })) return;
+    // For DMs: only their own transfers
+    if (isDM && dm !== userName.toUpperCase()) return;
+
+    var fromID   = String(t["FROM Store ID"]   || "").trim();
+    var fromName = String(t["FROM Store Name"] || "").trim();
+    var toID     = String(t["TO Store ID"]     || "").trim();
+    var toName   = String(t["TO Store Name"]   || "").trim();
+    var qty      = Number(t["Transfer Qty"])   || 0;
+    var value    = Number(t["Transfer Value"]) || 0;
+    var coverage = String(t["Coverage Status"] || "");
+    var isPO     = coverage.indexOf("Purchase") > -1;
+
+    // Add FROM store
+    if (fromID && fromID !== "N/A") {
+      if (!storeMap[fromID]) storeMap[fromID] = {id:fromID, name:fromName, market:market, transfers:0, value:0, po:0};
+      if (!isPO) { storeMap[fromID].transfers++; storeMap[fromID].value += value; }
+    }
+    // Add TO store
+    if (toID) {
+      if (!storeMap[toID]) storeMap[toID] = {id:toID, name:toName, market:market, transfers:0, value:0, po:0};
+      if (isPO) { storeMap[toID].po++; }
+      else { storeMap[toID].transfers++; storeMap[toID].value += value; }
+    }
+  });
+
+  return Object.values(storeMap).sort(function(a,b){
+    if (a.market !== b.market) return a.market < b.market ? -1 : 1;
+    return a.name < b.name ? -1 : 1;
+  });
+}
+
+function getStoreTransfers(transfers, storeID, userName) {
+  var markets = USER_MARKETS[userName] || [];
+  return transfers.filter(function(t){
+    var market = String(t["Market"] || "").trim().toUpperCase();
+    if (!markets.some(function(m){ return market.indexOf(m) > -1; })) return false;
+    var fromID = String(t["FROM Store ID"] || "").trim();
+    var toID   = String(t["TO Store ID"]   || "").trim();
+    return fromID === storeID || toID === storeID;
+  });
+}
+
+function renderStores(stores) {
+  var totalT=0, totalV=0, totalPO=0;
+  if (!stores.length) {
+    document.getElementById("store-list").innerHTML =
+      '<div style="padding:30px;text-align:center;color:var(--text-light);">'
+      +'<p style="font-size:15px;font-weight:600;">No transfer data found</p>'
+      +'<p style="font-size:13px;margin-top:6px;">Make sure the Transfer Data sheet has been populated.</p>'
+      +'</div>';
+    return;
+  }
+  document.getElementById("store-list").innerHTML = stores.map(function(s){
+    totalT += s.transfers; totalV += s.value; totalPO += s.po;
     var hasT = s.transfers > 0;
-    return '<div class="store-card'+(near?' nearby':'')+'" onclick="openPanel(''+s.id+'',''+s.name+'')">'
-      +'<div class="store-card-top"><div><div class="store-name">'+s.name+'</div><div class="store-id">Store '+s.id+'</div></div>'
-      +'<span class="nearby-pill">&#128205; You are Here</span></div>'
+    return '<div class="store-card" onclick="openPanel(''+s.id+'',''+s.name+'')">'
+      +'<div class="store-card-top"><div><div class="store-name">'+s.name+'</div>'
+      +'<div class="store-id">'+s.id+' &middot; '+s.market+'</div></div></div>'
       +'<div class="store-stats">'
-      +'<div class="sstat"><div class="sv">'+s.onHand+'</div><div class="sl">On Hand</div></div>'
       +'<div class="sstat"><div class="sv'+(hasT?' hot':'')+'">'+s.transfers+'</div><div class="sl">Transfers</div></div>'
-      +'<div class="sstat"><div class="sv'+(hasT?' hot':'')+'">$'+s.value+'</div><div class="sl">Trans. $</div></div>'
+      +'<div class="sstat"><div class="sv'+(hasT?' hot':'')+'">$'+Math.round(s.value).toLocaleString()+'</div><div class="sl">Value</div></div>'
       +'<div class="sstat"><div class="sv'+(s.po>0?' warn':'')+'">'+s.po+'</div><div class="sl">PO Needed</div></div>'
       +'</div>'
       +'<div class="store-card-foot">'
-      +'<span class="transfer-hint '+(hasT?'has':'none')+'">'+(hasT?'&#128260; '+s.transfers+' transfer'+(s.transfers!==1?'s':'')+' to action':'&#10003; No transfers needed')+'</span>'
-      +'<span class="chev">&#8250;</span></div></div>';
+      +'<span class="transfer-hint '+(hasT?'has':'none')+'">'
+      +(hasT?'&#128260; '+s.transfers+' transfer'+(s.transfers!==1?'s':'')+' to action':'&#10003; No transfers needed')
+      +'</span><span class="chev">&#8250;</span></div></div>';
   }).join('');
   document.getElementById("s-stores").textContent = stores.length;
   document.getElementById("s-trans").textContent = totalT;
-  document.getElementById("s-val").textContent = "$"+totalV.toLocaleString();
+  document.getElementById("s-val").textContent = "$"+Math.round(totalV).toLocaleString();
 }
+
+var allTransfers = [];
+var currentUserName = "";
 
 function openPanel(storeId, storeName) {
   document.getElementById("p-name").textContent = storeName;
-  document.getElementById("p-sub").textContent = "Store "+storeId+" - Transfer suggestions";
-  document.getElementById("p-body").innerHTML = DEMO_T.map(function(t) {
-    return '<div class="t-item">'
-      +'<div class="t-item-top"><div><div class="t-name">'+t.name+'</div><div class="t-cat">'+t.cat+'</div></div>'
-      +'<span class="cov-badge '+t.coverage+'">'+(t.coverage==="full"?"Covered":"Partial")+'</span></div>'
-      +'<div class="t-arrow"><div class="t-store">'+t.fromName+'</div><span class="t-arrowicon">&#8594;</span><div class="t-store">'+t.toName+'</div></div>'
-      +'<div class="t-meta"><span class="t-pill">Qty: '+t.qty+'</span><span class="t-pill val">$'+t.value.toFixed(2)+'</span>'
-      +(t.stillNeeded?'<span class="t-pill warn">'+t.stillNeeded+' still needed</span>':'')
-      +'</div></div>';
-  }).join('');
+  document.getElementById("p-sub").textContent = storeId + " — Transfer suggestions";
+  var storeT = getStoreTransfers(allTransfers, storeId, currentUserName);
+  var body = document.getElementById("p-body");
+  if (!storeT.length) {
+    body.innerHTML = '<div style="text-align:center;padding:40px 20px;color:var(--text-light);"><p style="font-size:36px;margin-bottom:10px;">&#10003;</p><p>No transfers needed for this store.</p></div>';
+  } else {
+    body.innerHTML = storeT.map(function(t){
+      var coverage = String(t["Coverage Status"] || "");
+      var isPO = coverage.indexOf("Purchase") > -1;
+      var isPartial = coverage.indexOf("Partial") > -1;
+      var badgeClass = isPO ? "po" : isPartial ? "partial" : "full";
+      var fromName = String(t["FROM Store Name"] || t["FROM Store ID"] || "N/A");
+      var toName   = String(t["TO Store Name"]   || t["TO Store ID"]   || "");
+      var qty   = Number(t["Transfer Qty"])   || 0;
+      var value = Number(t["Transfer Value"]) || 0;
+      var desc  = String(t["Item Description"] || "");
+      var cat   = String(t["Sub Category"] || t["Item Category"] || "");
+      return '<div class="t-item">'
+        +'<div class="t-item-top"><div><div class="t-name">'+desc+'</div><div class="t-cat">'+cat+'</div></div>'
+        +'<span class="cov-badge '+badgeClass+'">'+
+        (isPO ? "PO Needed" : isPartial ? "Partial" : "Covered")
+        +'</span></div>'
+        +(isPO ? '' :
+          '<div class="t-arrow"><div class="t-store">'+fromName+'</div>'
+          +'<span class="t-arrowicon">&#8594;</span>'
+          +'<div class="t-store">'+toName+'</div></div>')
+        +'<div class="t-meta">'
+        +'<span class="t-pill">Qty: '+qty+'</span>'
+        +'<span class="t-pill val">$'+value.toFixed(2)+'</span>'
+        +(isPO ? '<span class="t-pill warn">Purchase Order Suggested</span>' : '')
+        +'</div></div>';
+    }).join('');
+  }
   document.getElementById("overlay").classList.add("open");
   document.getElementById("panel").classList.add("open");
 }
@@ -212,22 +315,35 @@ function loadApp(session) {
       +'<p style="font-weight:700;color:#856404;">Email not matched: '+email+'</p></div>';
     return;
   }
+  currentUserName = name;
   var h = new Date().getHours();
   var tod = h<12?"Good morning":h<17?"Good afternoon":"Good evening";
   document.getElementById("greet").textContent = tod+", "+name.split(" ")[0]+"!";
-  var stores = STORES[name] || STORES["ADIL"];
-  var nearestId = stores[0].id;
-  document.getElementById("loc-text").innerHTML = "You are near <strong>"+stores[0].name+"</strong>";
-  renderStores(stores, nearestId);
+
+  document.getElementById("store-list").innerHTML =
+    '<div style="text-align:center;padding:40px 20px;">'
+    +'<div style="width:28px;height:28px;border:3px solid rgba(75,0,130,0.15);border-top-color:var(--purple);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px;"></div>'
+    +'<p style="color:var(--text-light);font-size:14px;">Loading live data...</p></div>';
+
+  fetchSheetData(SHEET_TAB).then(function(transfers){
+    allTransfers = transfers;
+    var stores = getStoreStats(transfers, name);
+    document.getElementById("loc-text").innerHTML = "Signed in as <strong>"+name+"</strong>";
+    renderStores(stores);
+  }).catch(function(err){
+    document.getElementById("store-list").innerHTML =
+      '<div style="padding:20px;background:#f8d7da;border-radius:12px;">'
+      +'<p style="font-weight:700;color:#be123c;">Could not load sheet data</p>'
+      +'<p style="font-size:12px;color:#be123c;margin-top:4px;">'+err.message+'</p>'
+      +'<p style="font-size:12px;color:#be123c;margin-top:4px;">Make sure the Google Sheet is shared as Anyone with the link can view.</p>'
+      +'</div>';
+  });
 }
 
-sb.auth.onAuthStateChange(function(event, session) {
-  if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
-    if (session) {
-      loadApp(session);
-    } else {
-      window.location.href = "login.html";
-    }
+sb.auth.onAuthStateChange(function(event, session){
+  if (event === "SIGNED_IN" || event === "INITIAL_SESSION") {
+    if (session) { loadApp(session); }
+    else { window.location.href = "login.html"; }
   }
 });
 
