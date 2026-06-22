@@ -5,14 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Transfer Advisor</title>
 <style>
-  :root {
-    --purple:#4B0082; --purple-dark:#350060; --purple-light:#6a00b8;
-    --magenta:#E20074; --off-white:#f5f0fa;
-    --text-dark:#1a0030; --text-mid:#4a3060; --text-light:#8a6aaa;
-    --border:rgba(75,0,130,0.12); --shadow:0 2px 12px rgba(75,0,130,0.10);
-    --green:#1a7a4a; --green-bg:rgba(26,122,74,0.08);
-    --amber:#b45309; --amber-bg:rgba(180,83,9,0.08);
-  }
+  :root { --purple:#4B0082; --purple-dark:#350060; --purple-light:#6a00b8; --magenta:#E20074; --off-white:#f5f0fa; --text-dark:#1a0030; --text-mid:#4a3060; --text-light:#8a6aaa; --border:rgba(75,0,130,0.12); --shadow:0 2px 12px rgba(75,0,130,0.10); --green:#1a7a4a; --green-bg:rgba(26,122,74,0.08); --amber:#b45309; --amber-bg:rgba(180,83,9,0.08); }
   * { box-sizing:border-box; margin:0; padding:0; }
   body { font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif; background:var(--off-white); min-height:100vh; padding-bottom:90px; }
   .app-header { background:var(--purple); padding:14px 16px 12px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:50; box-shadow:0 2px 12px rgba(0,0,0,0.2); }
@@ -104,7 +97,7 @@
     <div class="stat-card"><div class="stat-value green" id="s-val">$0</div><div class="stat-label">Transfer Value</div></div>
   </div>
   <div class="section-label">My Stores</div>
-  <div class="store-list" id="store-list"></div>
+  <div class="store-list" id="store-list"><p style="padding:20px;color:var(--text-light);text-align:center;">Loading your stores...</p></div>
 </div>
 <div class="overlay" id="overlay" onclick="closePanel()"></div>
 <div class="panel" id="panel">
@@ -203,23 +196,37 @@ async function signOut() {
 }
 
 async function init() {
-  const { data: { session } } = await sb.auth.getSession();
-  if (!session) {
-    window.location.href = "login.html";
-    return;
+  try {
+    // Listen for auth state — this fires when Supabase restores session from storage
+    sb.auth.onAuthStateChange(function(event, session) {
+      if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
+        if (session) {
+          loadApp(session);
+        } else {
+          // No session — redirect to login
+          window.location.href = "login.html";
+        }
+      }
+    });
+  } catch(e) {
+    document.getElementById("store-list").innerHTML = '<p style="padding:20px;color:red;">Error: '+e.message+'</p>';
   }
+}
+
+function loadApp(session) {
   var email = session.user.email;
   var name = EMAIL_MAP[email] || "ADIL";
   var h = new Date().getHours();
   var tod = h<12?"Good morning":h<17?"Good afternoon":"Good evening";
   document.getElementById("greet").textContent = tod+", "+name.split(" ")[0]+"!";
+  document.getElementById("greet-sub").textContent = "Here's your district at a glance";
   var stores = STORES[name] || STORES["ADIL"];
   var nearestId = stores[0].id;
   document.getElementById("loc-text").innerHTML = "You are near <strong>"+stores[0].name+"</strong>";
   renderStores(stores, nearestId);
 }
 
-setTimeout(init, 400);
+init();
 
 </script>
 </body>
