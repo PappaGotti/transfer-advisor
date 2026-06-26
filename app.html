@@ -15,6 +15,8 @@
   }
   * { box-sizing:border-box; margin:0; padding:0; }
   body { font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif; background:var(--off-white); min-height:100vh; padding-bottom:90px; }
+
+  /* HEADER */
   .app-header { background:var(--purple); padding:12px 16px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:50; box-shadow:0 2px 12px rgba(0,0,0,0.2); }
   .logo-pair { display:flex; align-items:center; gap:12px; }
   .logo-divider { width:1px; height:28px; background:rgba(255,255,255,0.35); }
@@ -27,12 +29,16 @@
   .greeting h1 { font-size:21px; font-weight:700; color:var(--text-dark); margin-bottom:3px; }
   .greeting p { font-size:13px; color:var(--text-light); }
   .section-label { font-size:10px; font-weight:800; letter-spacing:1.2px; text-transform:uppercase; color:var(--text-light); margin-bottom:10px; padding-left:2px; }
+
+  /* STAT ROW */
   .stat-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:22px; }
   .stat-card { background:white; border-radius:14px; padding:14px 10px; box-shadow:var(--shadow); text-align:center; }
   .stat-value { font-size:22px; font-weight:800; color:var(--purple); line-height:1; margin-bottom:5px; }
   .stat-value.amber { color:var(--amber); }
   .stat-value.green { color:var(--green); }
   .stat-label { font-size:9px; font-weight:700; color:var(--text-light); text-transform:uppercase; letter-spacing:0.5px; line-height:1.3; }
+
+  /* STORE CARDS */
   .store-list { display:flex; flex-direction:column; gap:10px; margin-bottom:20px; }
   .store-card { background:white; border-radius:14px; overflow:hidden; box-shadow:var(--shadow); cursor:pointer; border:1.5px solid transparent; transition:transform 0.12s; -webkit-tap-highlight-color:transparent; }
   .store-card:active { transform:scale(0.985); }
@@ -50,6 +56,59 @@
   .transfer-hint.has { color:var(--magenta); }
   .transfer-hint.none { color:var(--text-light); }
   .chev { color:var(--text-light); font-size:16px; }
+
+  /* MARKET EXPAND SECTION */
+  .market-expand-btn {
+    width:100%; padding:16px; background:white; border:2px dashed rgba(75,0,130,0.25);
+    border-radius:14px; color:var(--purple); font-size:14px; font-weight:700;
+    cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;
+    margin-bottom:20px; -webkit-tap-highlight-color:transparent; transition:all 0.15s;
+    min-height:54px;
+  }
+  .market-expand-btn:active { background:var(--off-white); transform:scale(0.98); }
+  .market-expand-btn.open { border-style:solid; border-color:var(--purple); background:rgba(75,0,130,0.04); }
+
+  .market-section { display:none; margin-bottom:20px; }
+  .market-section.open { display:block; }
+
+  .market-section-label {
+    font-size:10px; font-weight:800; letter-spacing:1.2px; text-transform:uppercase;
+    color:var(--magenta); margin-bottom:14px; padding-left:2px;
+    display:flex; align-items:center; gap:6px;
+  }
+  .market-section-label::after {
+    content:''; flex:1; height:1px; background:rgba(226,0,116,0.2);
+  }
+
+  /* DM ACCORDION */
+  .dm-accordion { display:flex; flex-direction:column; gap:10px; }
+  .dm-block { background:white; border-radius:14px; overflow:hidden; box-shadow:var(--shadow); }
+  .dm-header {
+    padding:14px 16px; display:flex; align-items:center; justify-content:space-between;
+    cursor:pointer; -webkit-tap-highlight-color:transparent; gap:8px;
+  }
+  .dm-header:active { background:var(--off-white); }
+  .dm-name { font-size:15px; font-weight:700; color:var(--text-dark); }
+  .dm-meta { font-size:11px; color:var(--text-light); margin-top:2px; }
+  .dm-chev { color:var(--purple); font-size:18px; font-weight:700; transition:transform 0.2s; flex-shrink:0; }
+  .dm-chev.open { transform:rotate(90deg); }
+  .dm-stores { display:none; border-top:1px solid var(--border); padding:10px; }
+  .dm-stores.open { display:flex; flex-direction:column; gap:8px; }
+
+  /* MARKET STORE CARDS (slightly different style to distinguish) */
+  .market-store-card {
+    background:var(--off-white); border-radius:12px; overflow:hidden;
+    cursor:pointer; border:1.5px solid var(--border);
+    transition:transform 0.12s; -webkit-tap-highlight-color:transparent;
+  }
+  .market-store-card:active { transform:scale(0.985); }
+  .market-store-card .store-card-top { padding:12px 14px 8px; }
+  .market-store-card .store-name { font-size:14px; }
+  .market-store-card .store-stats { padding:0 14px 10px; }
+  .market-store-card .sstat .sv { font-size:15px; }
+  .market-store-card .store-card-foot { padding:8px 14px; }
+
+  /* PANEL / OVERLAY */
   .overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:200; }
   .overlay.open { display:block; }
   .panel { position:fixed; left:0; right:0; bottom:0; background:var(--off-white); border-radius:20px 20px 0 0; max-height:85vh; display:flex; flex-direction:column; transform:translateY(100%); transition:transform 0.28s cubic-bezier(0.32,0.72,0,1); z-index:201; }
@@ -59,6 +118,8 @@
   .panel-hdr h2 { font-size:17px; font-weight:700; color:var(--text-dark); }
   .panel-hdr p { font-size:12px; color:var(--text-light); margin-top:2px; }
   .panel-body { flex:1; overflow-y:auto; padding:14px 16px 30px; -webkit-overflow-scrolling:touch; }
+
+  /* TRANSFER ITEMS */
   .t-item { background:white; border-radius:12px; padding:14px; margin-bottom:10px; box-shadow:var(--shadow); }
   .t-item-top { display:flex; align-items:flex-start; justify-content:space-between; gap:8px; margin-bottom:10px; }
   .t-name { font-size:14px; font-weight:700; color:var(--text-dark); line-height:1.3; }
@@ -74,6 +135,8 @@
   .t-pill { font-size:11px; font-weight:600; background:var(--off-white); border-radius:8px; padding:4px 9px; color:var(--text-mid); }
   .t-pill.val { color:var(--purple); font-weight:700; }
   .t-pill.warn { color:var(--amber); }
+
+  /* MISC */
   .spinner-wrap { text-align:center; padding:40px 20px; }
   .spinner { width:28px; height:28px; border:3px solid rgba(75,0,130,0.15); border-top-color:var(--purple); border-radius:50%; animation:spin 0.8s linear infinite; margin:0 auto 12px; }
   @keyframes spin { to { transform:rotate(360deg); } }
@@ -82,6 +145,8 @@
   .err-box.yellow { background:#fff3cd; color:#856404; }
   .err-box p { font-size:13px; margin-top:4px; }
   .err-box strong { font-weight:700; }
+
+  /* BOTTOM NAV */
   .bnav { position:fixed; bottom:0; left:0; right:0; background:white; border-top:1px solid var(--border); display:flex; z-index:100; padding-bottom:env(safe-area-inset-bottom,6px); box-shadow:0 -2px 12px rgba(75,0,130,0.08); }
   .bnav-item { flex:1; display:flex; flex-direction:column; align-items:center; padding:10px 4px 6px; gap:3px; cursor:pointer; color:var(--text-light); font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:0.4px; -webkit-tap-highlight-color:transparent; }
   .bnav-item.active { color:var(--purple); }
@@ -93,16 +158,16 @@
 <header class="app-header">
   <div class="logo-pair">
     <svg viewBox="0 0 180 70" xmlns="http://www.w3.org/2000/svg" height="30">
-  <text x="4" y="52" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="54" fill="white">ctw</text>
-  <circle cx="148" cy="18" r="5" fill="white"/>
-  <path d="M155 10 Q168 4 174 18" stroke="white" stroke-width="4" fill="none" stroke-linecap="round"/>
-  <path d="M159 5 Q176 -4 182 18" stroke="white" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.6"/>
-</svg>
+      <text x="4" y="52" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="54" fill="white">ctw</text>
+      <circle cx="148" cy="18" r="5" fill="white"/>
+      <path d="M155 10 Q168 4 174 18" stroke="white" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <path d="M159 5 Q176 -4 182 18" stroke="white" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.6"/>
+    </svg>
     <div class="logo-divider"></div>
     <svg viewBox="0 0 200 60" xmlns="http://www.w3.org/2000/svg" height="28">
-  <text x="4" y="44" font-family="Arial,sans-serif" font-weight="900" font-size="42" fill="white">metro</text>
-  <text x="12" y="60" font-family="Arial,sans-serif" font-weight="700" font-size="16" fill="#E20074">by T-Mobile</text>
-</svg>
+      <text x="4" y="44" font-family="Arial,sans-serif" font-weight="900" font-size="42" fill="white">metro</text>
+      <text x="12" y="60" font-family="Arial,sans-serif" font-weight="700" font-size="16" fill="#E20074">by T-Mobile</text>
+    </svg>
   </div>
   <button class="sign-out-btn" onclick="signOut()">Sign Out</button>
 </header>
@@ -124,6 +189,18 @@
   <div class="store-list" id="store-list">
     <div class="spinner-wrap"><div class="spinner"></div><p style="color:var(--text-light);font-size:14px;">Loading...</p></div>
   </div>
+
+  <!-- MARKET EXPAND BUTTON — only shown for DMs -->
+  <button class="market-expand-btn" id="market-btn" style="display:none" onclick="toggleMarket()">
+    <span id="market-btn-icon">&#127758;</span>
+    <span id="market-btn-label">See Market Transfers</span>
+  </button>
+
+  <!-- MARKET SECTION — other DMs' stores -->
+  <div class="market-section" id="market-section">
+    <div class="market-section-label">Other Stores in My Market</div>
+    <div class="dm-accordion" id="dm-accordion"></div>
+  </div>
 </div>
 
 <div class="overlay" id="overlay" onclick="closePanel()"></div>
@@ -142,7 +219,10 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const sb = supabase.createClient("https://nmwlxfwqeduhpygbsnip.supabase.co","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5td2x4ZndxZWR1aHB5Z2JzbmlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3ODg4MjIsImV4cCI6MjA5NzM2NDgyMn0.xidH5wySoptVL4AOWE6lkrBPVDpPY7t2mE3A1CZdv5k");
+const sb = supabase.createClient(
+  "https://nmwlxfwqeduhpygbsnip.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5td2x4ZndxZWR1aHB5Z2JzbmlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3ODg4MjIsImV4cCI6MjA5NzM2NDgyMn0.xidH5wySoptVL4AOWE6lkrBPVDpPY7t2mE3A1CZdv5k"
+);
 const SHEET_ID = "1ScasNvCPGeo-dIka8f9UUZ4AFOP48A3G3qTyXbTC_Ow";
 
 const EMAIL_MAP = {
@@ -173,11 +253,25 @@ const USER_MARKETS = {
   "ANELE":       ["MIAMI"]
 };
 
+// Which DM belongs to which market
+const DM_MARKET = {
+  "ADIL":      "TAMPA BAY",
+  "JESSICA":   "TAMPA BAY",
+  "SUSANA G":  "TAMPA BAY",
+  "HUSAM":     "TAMPA BAY",
+  "AUGUSTO":   "PORT CHARLOTTE",
+  "LISSANDRA": "MIAMI",
+  "DAILY":     "MIAMI",
+  "ANELE":     "MIAMI"
+};
+
 const DM_NAMES = ["ADIL","JESSICA","SUSANA G","HUSAM","AUGUSTO","LISSANDRA","DAILY","ANELE"];
 
 var allTransfers = [];
-var currentUser = "";
+var currentUser  = "";
+var marketOpen   = false;
 
+// ── FETCH SHEET ──
 async function fetchSheet(tab) {
   var url = "https://docs.google.com/spreadsheets/d/" + SHEET_ID
     + "/gviz/tq?tqx=out:json&sheet=" + encodeURIComponent(tab);
@@ -185,7 +279,7 @@ async function fetchSheet(tab) {
   if (!resp.ok) throw new Error("HTTP " + resp.status + " fetching sheet");
   var text = await resp.text();
   var start = text.indexOf("{");
-  var end = text.lastIndexOf("}");
+  var end   = text.lastIndexOf("}");
   if (start < 0) throw new Error("Invalid response from Google Sheets");
   var json = JSON.parse(text.substring(start, end + 1));
   if (!json.table || !json.table.cols) throw new Error("Sheet not found or not shared publicly");
@@ -200,10 +294,11 @@ async function fetchSheet(tab) {
   });
 }
 
+// ── BUILD STORE MAP (own district only) ──
 function buildStoreMap(transfers, userName) {
   var markets = USER_MARKETS[userName] || [];
-  var isDM = DM_NAMES.indexOf(userName) > -1;
-  var map = {};
+  var isDM    = DM_NAMES.indexOf(userName) > -1;
+  var map     = {};
   transfers.forEach(function(t){
     var dm     = String(t["DM"]     || "").trim().toUpperCase();
     var market = String(t["Market"] || "").trim().toUpperCase();
@@ -227,80 +322,186 @@ function buildStoreMap(transfers, userName) {
     }
   });
   return Object.values(map).sort(function(a,b){
-    return a.market !== b.market ? (a.market < b.market ? -1:1) : (a.name < b.name ? -1:1);
+    return a.name < b.name ? -1 : 1;
   });
 }
 
+// ── BUILD MARKET MAP (other DMs in same market) ──
+// Returns: { "JESSICA": { stores: {...}, market: "TAMPA BAY" }, ... }
+function buildMarketMap(transfers, userName) {
+  var myMarkets = USER_MARKETS[userName] || [];
+  var result    = {};
+  transfers.forEach(function(t){
+    var dm     = String(t["DM"]     || "").trim().toUpperCase();
+    var market = String(t["Market"] || "").trim().toUpperCase();
+    // must be same market, different DM
+    if (!myMarkets.some(function(m){ return market === m; })) return;
+    if (dm === userName.toUpperCase()) return;
+    if (!dm) return;
+    var fromID   = String(t["FROM Store ID"]   || "").trim();
+    var fromName = String(t["FROM Store Name"] || "").trim();
+    var toID     = String(t["TO Store ID"]     || "").trim();
+    var toName   = String(t["TO Store Name"]   || "").trim();
+    var value    = Number(t["Transfer Value"]) || 0;
+    var isPO     = String(t["Coverage Status"] || "").indexOf("Purchase") > -1;
+    if (!result[dm]) result[dm] = { market: market, stores: {} };
+    function addStore(id, name) {
+      if (!id || id === "N/A") return;
+      if (!result[dm].stores[id]) result[dm].stores[id] = {id:id,name:name,market:market,transfers:0,value:0,po:0};
+      if (isPO) result[dm].stores[id].po++;
+      else { result[dm].stores[id].transfers++; result[dm].stores[id].value += value; }
+    }
+    addStore(fromID, fromName);
+    addStore(toID,   toName);
+  });
+  return result;
+}
+
+// ── RENDER OWN STORES ──
 function renderStores(stores) {
-  var totalT=0, totalV=0;
+  var totalT = 0, totalV = 0;
   if (!stores.length) {
     document.getElementById("store-list").innerHTML =
-      '<div class="err-box yellow"><strong>No data found</strong><p>No transfers matched your account. Check that the Transfer Data sheet has data and your DM name matches exactly.</p></div>';
-    document.getElementById("s-stores").textContent="0";
-    document.getElementById("s-trans").textContent="0";
-    document.getElementById("s-val").textContent="$0";
+      '<div class="err-box yellow"><strong>No data found</strong><p>No transfers matched your account.</p></div>';
+    document.getElementById("s-stores").textContent = "0";
+    document.getElementById("s-trans").textContent  = "0";
+    document.getElementById("s-val").textContent    = "$0";
     return;
   }
   document.getElementById("store-list").innerHTML = stores.map(function(s){
-    totalT+=s.transfers; totalV+=s.value;
-    var hasT=s.transfers>0;
-    return '<div class="store-card" onclick="openPanel(\''+ s.id +'\',\''+ s.name +'\')">'+
-      '<div class="store-card-top"><div>'+
-      '<div class="store-name">'+s.name+'</div>'+
-      '<div class="store-id">'+s.id+' &middot; '+s.market+'</div></div></div>'+
-      '<div class="store-stats">'+
-      '<div class="sstat"><div class="sv'+(hasT?' hot':'')+'">'+s.transfers+'</div><div class="sl">Transfers</div></div>'+
-      '<div class="sstat"><div class="sv'+(hasT?' hot':'')+'">$'+Math.round(s.value).toLocaleString()+'</div><div class="sl">Value</div></div>'+
-      '<div class="sstat"><div class="sv'+(s.po>0?' warn':'')+'">'+s.po+'</div><div class="sl">PO Needed</div></div>'+
-      '</div>'+
-      '<div class="store-card-foot">'+
-      '<span class="transfer-hint '+(hasT?'has':'none')+'">'+
-      (hasT?'&#128260; '+s.transfers+' transfer'+(s.transfers!==1?'s':'')+' to action':'&#10003; No transfers needed')+
-      '</span><span class="chev">&#8250;</span></div></div>';
-  }).join('');
+    totalT += s.transfers; totalV += s.value;
+    var hasT = s.transfers > 0;
+    return storeCardHTML(s, hasT, "openPanel");
+  }).join("");
   document.getElementById("s-stores").textContent = stores.length;
-  document.getElementById("s-trans").textContent = totalT;
-  document.getElementById("s-val").textContent = "$"+Math.round(totalV).toLocaleString();
+  document.getElementById("s-trans").textContent  = totalT;
+  document.getElementById("s-val").textContent    = "$" + Math.round(totalV).toLocaleString();
 }
 
+// ── REUSABLE STORE CARD HTML ──
+function storeCardHTML(s, hasT, clickFn, extraClass) {
+  var cls = (extraClass || "store-card");
+  return '<div class="' + cls + '" onclick="' + clickFn + '(\'' + s.id + '\',\'' + s.name.replace(/'/g,"\\x27") + '\')">'+
+    '<div class="store-card-top"><div>'+
+    '<div class="store-name">' + s.name + '</div>'+
+    '<div class="store-id">' + s.id + ' &middot; ' + s.market + '</div></div></div>'+
+    '<div class="store-stats">'+
+    '<div class="sstat"><div class="sv' + (hasT?' hot':'') + '">' + s.transfers + '</div><div class="sl">Transfers</div></div>'+
+    '<div class="sstat"><div class="sv' + (hasT?' hot':'') + '">$' + Math.round(s.value).toLocaleString() + '</div><div class="sl">Value</div></div>'+
+    '<div class="sstat"><div class="sv' + (s.po>0?' warn':'') + '">' + s.po + '</div><div class="sl">PO Needed</div></div>'+
+    '</div>'+
+    '<div class="store-card-foot">'+
+    '<span class="transfer-hint ' + (hasT?'has':'none') + '">'+
+    (hasT ? '&#128260; ' + s.transfers + ' transfer' + (s.transfers!==1?'s':'') + ' to action' : '&#10003; No transfers needed')+
+    '</span><span class="chev">&#8250;</span></div></div>';
+}
+
+// ── RENDER MARKET SECTION ──
+function renderMarketSection(userName) {
+  var marketMap = buildMarketMap(allTransfers, userName);
+  var accordion = document.getElementById("dm-accordion");
+  var dmList    = Object.keys(marketMap).sort();
+  if (!dmList.length) {
+    accordion.innerHTML = '<div class="err-box yellow"><strong>No other market transfers found</strong><p>No transfer data available for other DMs in your market.</p></div>';
+    return;
+  }
+  accordion.innerHTML = dmList.map(function(dm){
+    var dmData  = marketMap[dm];
+    var stores  = Object.values(dmData.stores).sort(function(a,b){ return a.name<b.name?-1:1; });
+    var totalT  = stores.reduce(function(s,x){ return s+x.transfers; }, 0);
+    var storeCount = stores.length;
+    var storesHTML = stores.map(function(s){
+      var hasT = s.transfers > 0;
+      return storeCardHTML(s, hasT, "openPanel", "market-store-card");
+    }).join("");
+    // Pretty-format DM name (Title Case)
+    var dmDisplay = dm.charAt(0) + dm.slice(1).toLowerCase().replace(/\b\w/g, function(c){ return c.toUpperCase(); });
+    return '<div class="dm-block">'+
+      '<div class="dm-header" onclick="toggleDM(\'' + dm + '\')">'+
+      '<div>'+
+      '<div class="dm-name">' + dmDisplay + '</div>'+
+      '<div class="dm-meta">' + storeCount + ' store' + (storeCount!==1?'s':'') + ' &middot; ' + dmData.market + ' &middot; ' + totalT + ' transfer' + (totalT!==1?'s':'') + '</div>'+
+      '</div>'+
+      '<span class="dm-chev" id="chev-' + dm + '">&#8250;</span>'+
+      '</div>'+
+      '<div class="dm-stores" id="stores-' + dm + '">' + storesHTML + '</div>'+
+      '</div>';
+  }).join("");
+}
+
+// ── TOGGLE MARKET SECTION ──
+function toggleMarket() {
+  marketOpen = !marketOpen;
+  var btn     = document.getElementById("market-btn");
+  var section = document.getElementById("market-section");
+  var icon    = document.getElementById("market-btn-icon");
+  var label   = document.getElementById("market-btn-label");
+  if (marketOpen) {
+    btn.classList.add("open");
+    section.classList.add("open");
+    icon.textContent  = "✕";
+    label.textContent = "Hide Market Transfers";
+    renderMarketSection(currentUser);
+  } else {
+    btn.classList.remove("open");
+    section.classList.remove("open");
+    icon.textContent  = "🌎";
+    label.textContent = "See Market Transfers";
+  }
+}
+
+// ── TOGGLE DM ACCORDION ──
+function toggleDM(dm) {
+  var storesEl = document.getElementById("stores-" + dm);
+  var chevEl   = document.getElementById("chev-" + dm);
+  var isOpen   = storesEl.classList.contains("open");
+  if (isOpen) {
+    storesEl.classList.remove("open");
+    chevEl.classList.remove("open");
+  } else {
+    storesEl.classList.add("open");
+    chevEl.classList.add("open");
+  }
+}
+
+// ── OPEN PANEL ──
 function openPanel(storeId, storeName) {
   document.getElementById("p-name").textContent = storeName;
-  document.getElementById("p-sub").textContent = storeId + " — Transfers";
+  document.getElementById("p-sub").textContent  = storeId + " — Transfers";
   var markets = USER_MARKETS[currentUser] || [];
-  var isDM = DM_NAMES.indexOf(currentUser) > -1;
+  // For panel, show all transfers for this store within user's markets (any DM)
   var rows = allTransfers.filter(function(t){
-    var market = String(t["Market"]||"").trim().toUpperCase();
-    var dm = String(t["DM"]||"").trim().toUpperCase();
-    if (!markets.some(function(m){ return market===m; })) return false;
-    if (isDM && dm !== currentUser.toUpperCase()) return false;
-    return String(t["FROM Store ID"]||"").trim()===storeId || String(t["TO Store ID"]||"").trim()===storeId;
+    var market = String(t["Market"] || "").trim().toUpperCase();
+    if (!markets.some(function(m){ return market === m; })) return false;
+    return String(t["FROM Store ID"] || "").trim() === storeId
+        || String(t["TO Store ID"]   || "").trim() === storeId;
   });
   var body = document.getElementById("p-body");
   if (!rows.length) {
-    body.innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--text-light);"><p style="font-size:32px;">&#10003;</p><p style="margin-top:8px;">No transfers for this store.</p></div>';
+    body.innerHTML = '<div style="text-align:center;padding:40px 20px;color:var(--text-light);"><p style="font-size:32px;">&#10003;</p><p style="margin-top:8px;">No transfers for this store.</p></div>';
   } else {
     body.innerHTML = rows.map(function(t){
-      var cov = String(t["Coverage Status"]||"");
-      var isPO = cov.indexOf("Purchase")>-1;
-      var isPartial = cov.indexOf("Partial")>-1;
-      var bClass = isPO?"po":isPartial?"partial":"full";
-      var bLabel = isPO?"PO Needed":isPartial?"Partial":"Covered";
-      var fromName = String(t["FROM Store Name"]||t["FROM Store ID"]||"N/A");
-      var toName   = String(t["TO Store Name"]  ||t["TO Store ID"]  ||"");
-      var qty   = Number(t["Transfer Qty"])  ||0;
-      var value = Number(t["Transfer Value"])||0;
+      var cov      = String(t["Coverage Status"] || "");
+      var isPO     = cov.indexOf("Purchase") > -1;
+      var isPartial= cov.indexOf("Partial")  > -1;
+      var bClass   = isPO ? "po" : isPartial ? "partial" : "full";
+      var bLabel   = isPO ? "PO Needed" : isPartial ? "Partial" : "Covered";
+      var fromName = String(t["FROM Store Name"] || t["FROM Store ID"] || "N/A");
+      var toName   = String(t["TO Store Name"]   || t["TO Store ID"]   || "");
+      var qty      = Number(t["Transfer Qty"])   || 0;
+      var value    = Number(t["Transfer Value"]) || 0;
       return '<div class="t-item">'+
         '<div class="t-item-top"><div>'+
-        '<div class="t-name">'+String(t["Item Description"]||"")+'</div>'+
-        '<div class="t-cat">'+String(t["Sub Category"]||t["Item Category"]||"")+'</div></div>'+
-        '<span class="cov-badge '+bClass+'">'+bLabel+'</span></div>'+
-        (isPO?'':('<div class="t-arrow"><div class="t-store">'+fromName+'</div><span class="t-arrowicon">&#8594;</span><div class="t-store">'+toName+'</div></div>'))+
+        '<div class="t-name">' + String(t["Item Description"] || "") + '</div>'+
+        '<div class="t-cat">'  + String(t["Sub Category"] || t["Item Category"] || "") + '</div></div>'+
+        '<span class="cov-badge ' + bClass + '">' + bLabel + '</span></div>'+
+        (isPO ? '' : ('<div class="t-arrow"><div class="t-store">' + fromName + '</div><span class="t-arrowicon">&#8594;</span><div class="t-store">' + toName + '</div></div>'))+
         '<div class="t-meta">'+
-        '<span class="t-pill">Qty: '+qty+'</span>'+
-        '<span class="t-pill val">$'+value.toFixed(2)+'</span>'+
-        (isPO?'<span class="t-pill warn">Suggest PO</span>':'')+
+        '<span class="t-pill">Qty: ' + qty + '</span>'+
+        '<span class="t-pill val">$' + value.toFixed(2) + '</span>'+
+        (isPO ? '<span class="t-pill warn">Suggest PO</span>' : '')+
         '</div></div>';
-    }).join('');
+    }).join("");
   }
   document.getElementById("overlay").classList.add("open");
   document.getElementById("panel").classList.add("open");
@@ -316,37 +517,44 @@ async function signOut() {
   window.location.href = "login.html";
 }
 
+// ── LOAD APP ──
 function loadApp(session) {
   var email = session.user.email;
-  var name = EMAIL_MAP[email];
+  var name  = EMAIL_MAP[email];
   if (!name) {
-    document.getElementById("store-list").innerHTML=
-      '<div class="err-box yellow"><strong>Email not matched</strong><p>Logged in as: '+email+'</p></div>';
+    document.getElementById("store-list").innerHTML =
+      '<div class="err-box yellow"><strong>Email not matched</strong><p>Logged in as: ' + email + '</p></div>';
     return;
   }
   currentUser = name;
+  var isDM = DM_NAMES.indexOf(name) > -1;
   var h = new Date().getHours();
   document.getElementById("greet").textContent =
-    (h<12?"Good morning":h<17?"Good afternoon":"Good evening")+", "+name.split(" ")[0]+"!";
-  document.getElementById("loc-text").innerHTML = "Signed in as <strong>"+name+"</strong>";
+    (h<12 ? "Good morning" : h<17 ? "Good afternoon" : "Good evening") + ", " + name.split(" ")[0] + "!";
+  document.getElementById("loc-text").innerHTML = "Signed in as <strong>" + name + "</strong>";
+
+  // Show market button only for DMs
+  if (isDM) {
+    document.getElementById("market-btn").style.display = "flex";
+  }
 
   fetchSheet("Transfer Data").then(function(data){
     allTransfers = data;
-    var stores = buildStoreMap(data, name);
+    var stores   = buildStoreMap(data, name);
     renderStores(stores);
   }).catch(function(err){
-    document.getElementById("store-list").innerHTML=
-      '<div class="err-box red"><strong>Could not load data</strong><p>'+err.message+'</p><p style="margin-top:6px;">Make sure the sheet is shared as Anyone with link can view.</p></div>';
-    document.getElementById("s-stores").textContent="!";
-    document.getElementById("s-trans").textContent="!";
-    document.getElementById("s-val").textContent="!";
+    document.getElementById("store-list").innerHTML =
+      '<div class="err-box red"><strong>Could not load data</strong><p>' + err.message + '</p><p style="margin-top:6px;">Make sure the sheet is shared as Anyone with link can view.</p></div>';
+    document.getElementById("s-stores").textContent = "!";
+    document.getElementById("s-trans").textContent  = "!";
+    document.getElementById("s-val").textContent    = "!";
   });
 }
 
 sb.auth.onAuthStateChange(function(event, session){
-  if (event==="SIGNED_IN"||event==="INITIAL_SESSION"){
+  if (event === "SIGNED_IN" || event === "INITIAL_SESSION") {
     if (session) loadApp(session);
-    else window.location.href="login.html";
+    else window.location.href = "login.html";
   }
 });
 </script>
